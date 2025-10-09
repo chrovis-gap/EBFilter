@@ -303,6 +303,14 @@ def ebfilter_main(args):
             # wait all the jobs to be done
             for i in range(thread_num):
                 jobs[i].join()
+
+            flg_error = False
+            for p in jobs:
+                if p.exitcode != 0:
+                    print(f"Process {p.pid} exited with code p.exitcode")
+                    flg_error = True
+            if flg_error:
+                sys.exit(1)
         
             # merge the individual results
             process_anno.merge_anno(outputPath + ".", outputPath, thread_num)
@@ -329,6 +337,14 @@ def ebfilter_main(args):
             for i in range(thread_num):
                 jobs[i].join()
 
+            flg_error = False
+            for p in jobs:
+                if p.exitcode != 0:
+                    print(f"Process {p.pid} exited with code p.exitcode")
+                    flg_error = True
+            if flg_error:
+                sys.exit(1)
+        
             # merge the individual results
             process_vcf.merge_vcf(outputPath + ".", outputPath, thread_num)
 
