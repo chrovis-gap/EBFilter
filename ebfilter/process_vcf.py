@@ -13,7 +13,7 @@ def partition_vcf(inputFilePath, outputFilePrefix, partitionNum):
         recordNum += 1
 
     partitionNum_mod = min(recordNum, partitionNum)
-    eachPartitionNum = recordNum / partitionNum_mod
+    eachPartitionNum = recordNum // partitionNum_mod
 
     currentPartition = 0
     currentRecordNum = 0
