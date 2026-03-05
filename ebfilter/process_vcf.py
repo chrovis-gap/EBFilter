@@ -12,12 +12,18 @@ def partition_vcf(inputFilePath, outputFilePrefix, partitionNum):
     for record in vcf_reader1:
         recordNum += 1
 
-    partitionNum_mod = min(recordNum, partitionNum)
+    # Ensure that at least one split VCF file is generated even when the number
+    # of records is smaller than the number of partitions (especially when #records == 0)
+    if recordNum < partitionNum:
+        partitionNum_mod = 1
+    else:
+        partitionNum_mod = partitionNum
+
     eachPartitionNum = recordNum // partitionNum_mod
 
     currentPartition = 0
     currentRecordNum = 0
-    
+
     vcf_reader2 = vcfpy.Reader.from_path(inputFilePath)
     # vcf_reader2 = vcf.Reader(filename = inputFilePath)
     vcf_writer = vcfpy.Writer.from_path(outputFilePrefix + "0", vcf_reader2.header)

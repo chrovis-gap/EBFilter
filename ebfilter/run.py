@@ -324,17 +324,17 @@ def ebfilter_main(args):
         else:
             from . import process_vcf
             # partition vcf files
-            process_vcf.partition_vcf(targetMutationFile, outputPath + ".tmp.input.vcf.", thread_num)
+            partition_num = process_vcf.partition_vcf(targetMutationFile, outputPath + ".tmp.input.vcf.", thread_num)
 
             jobs = []
-            for i in range(thread_num):
+            for i in range(partition_num):
                 process = multiprocessing.Process(target = EBFilter_worker_vcf, args = \
                     (outputPath + ".tmp.input.vcf." + str(i), targetBamPath, controlBamPathList, outputPath + "." + str(i), mapping_qual_thres, base_qual_thres, filter_flags, is_loption, region, debug_mode, control_panel_database))
                 jobs.append(process)
                 process.start()
 
             # wait all the jobs to be done
-            for i in range(thread_num):
+            for i in range(partition_num):
                 jobs[i].join()
 
             flg_error = False
@@ -346,11 +346,11 @@ def ebfilter_main(args):
                 sys.exit(1)
         
             # merge the individual results
-            process_vcf.merge_vcf(outputPath + ".", outputPath, thread_num)
+            process_vcf.merge_vcf(outputPath + ".", outputPath, partition_num)
 
             # delete intermediate files
             if debug_mode == False:
-                for i in range(thread_num):
+                for i in range(partition_num):
                     subprocess.check_call(["rm", outputPath + ".tmp.input.vcf." + str(i)])
                     subprocess.check_call(["rm", outputPath + "." + str(i)])
 
